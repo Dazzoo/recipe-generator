@@ -12,8 +12,14 @@
     "@auth/prisma-adapter": "^2.9.1",
     "@heroicons/react": "^2.2.0",
     "@prisma/client": "^6.8.2",
+    "@radix-ui/react-checkbox": "^1.3.2",
+    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-slider": "^1.3.5",
+    "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/postcss": "^4.1.8",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "lucide-react": "^0.511.0",
     "next": "15.3.3",
     "next-auth": "^4.24.11",
     "openai": "^5.0.1",
@@ -32,6 +38,7 @@
     "postcss": "^8.5.4",
     "prisma": "^6.8.2",
     "tailwindcss": "^4.1.8",
+    "tw-animate-css": "^1.3.2",
     "typescript": "^5"
   }
 }

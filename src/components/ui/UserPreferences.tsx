@@ -2,6 +2,10 @@
 
 import React, { useState } from 'react';
 import type { UserPreferences as UserPreferencesType } from '@/types';
+import { Card } from '@/components/ui/shadcn/card';
+import { Checkbox } from '@/components/ui/shadcn/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select';
+import { Slider } from '@/components/ui/shadcn/slider';
 
 interface UserPreferencesProps {
   onPreferencesChange: (preferences: Partial<UserPreferencesType>) => void;
@@ -32,78 +36,97 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <label className="block text-sm font-medium mb-2">
-          Dietary Restrictions
-        </label>
-        <div className="flex flex-wrap gap-2">
+        <label className="text-sm font-medium mb-3 block pixel-text">Dietary Restrictions</label>
+        <div className="flex flex-wrap gap-3">
           {dietaryRestrictions.map((restriction) => (
-            <label key={restriction} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
+            <Card
+              key={restriction}
+              className={`p-3 flex items-center gap-2 cursor-pointer transition-colors pixel-card ${
+                preferences.dietaryRestrictions?.includes(restriction)
+                  ? 'bg-primary/10 border-primary'
+                  : 'hover:bg-accent/50'
+              }`}
+              onClick={() => {
+                const current = preferences.dietaryRestrictions || [];
+                const updated = current.includes(restriction)
+                  ? current.filter((r) => r !== restriction)
+                  : [...current, restriction];
+                handleChange('dietaryRestrictions', updated);
+              }}
+            >
+              <Checkbox
                 checked={preferences.dietaryRestrictions?.includes(restriction)}
-                onChange={(e) => {
+                onCheckedChange={(checked) => {
                   const current = preferences.dietaryRestrictions || [];
-                  const updated = e.target.checked
+                  const updated = checked
                     ? [...current, restriction]
                     : current.filter((r) => r !== restriction);
                   handleChange('dietaryRestrictions', updated);
                 }}
-                className="rounded"
+                className="pixel-checkbox"
               />
-              <span>{restriction}</span>
-            </label>
+              <span className="text-sm font-medium pixel-text">
+                {restriction}
+              </span>
+            </Card>
           ))}
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">
-          Cooking Skill Level
-        </label>
-        <select
+        <label className="text-sm font-medium mb-3 block pixel-text">Cooking Skill Level</label>
+        <Select
           value={preferences.cookingSkillLevel}
-          onChange={(e) =>
-            handleChange('cookingSkillLevel', e.target.value as UserPreferencesType['cookingSkillLevel'])
+          onValueChange={(value) =>
+            handleChange('cookingSkillLevel', value as UserPreferencesType['cookingSkillLevel'])
           }
-          className="w-full p-2 border rounded"
         >
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="advanced">Advanced</option>
-        </select>
+          <SelectTrigger className="pixel-select">
+            <SelectValue placeholder="Select skill level" />
+          </SelectTrigger>
+          <SelectContent className="pixel-card">
+            <SelectItem value="beginner" className="pixel-text">Beginner</SelectItem>
+            <SelectItem value="intermediate" className="pixel-text">Intermediate</SelectItem>
+            <SelectItem value="advanced" className="pixel-text">Advanced</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">
-          Cooking Time Preference
-        </label>
-        <select
+        <label className="text-sm font-medium mb-3 block pixel-text">Cooking Time Preference</label>
+        <Select
           value={preferences.cookingTimePreference}
-          onChange={(e) =>
-            handleChange('cookingTimePreference', e.target.value as UserPreferencesType['cookingTimePreference'])
+          onValueChange={(value) =>
+            handleChange('cookingTimePreference', value as UserPreferencesType['cookingTimePreference'])
           }
-          className="w-full p-2 border rounded"
         >
-          <option value="quick">Quick (15-30 mins)</option>
-          <option value="moderate">Moderate (30-60 mins)</option>
-          <option value="extensive">Extensive (60+ mins)</option>
-        </select>
+          <SelectTrigger className="pixel-select">
+            <SelectValue placeholder="Select time preference" />
+          </SelectTrigger>
+          <SelectContent className="pixel-card">
+            <SelectItem value="quick" className="pixel-text">Quick (15-30 mins)</SelectItem>
+            <SelectItem value="moderate" className="pixel-text">Moderate (30-60 mins)</SelectItem>
+            <SelectItem value="extensive" className="pixel-text">Extensive (60+ mins)</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">
-          Serving Size
+        <label className="text-sm font-medium mb-3 block pixel-text">
+          Serving Size: {preferences.servingSize}
         </label>
-        <input
-          type="number"
-          min="1"
-          max="12"
-          value={preferences.servingSize}
-          onChange={(e) => handleChange('servingSize', parseInt(e.target.value))}
-          className="w-full p-2 border rounded"
-        />
+        <div className="flex items-center gap-4">
+          <Slider
+            value={[preferences.servingSize || 2]}
+            min={1}
+            max={12}
+            step={1}
+            onValueChange={([value]) => handleChange('servingSize', value)}
+            className="flex-1 pixel-slider"
+          />
+        </div>
       </div>
     </div>
   );

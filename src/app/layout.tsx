@@ -1,9 +1,18 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { Inter, VT323 } from 'next/font/google'
+import '@/styles/pixel.css'
+
+const inter = Inter({ subsets: ['latin'] })
+const vt323 = VT323({ 
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-vt323',
+})
 
 export const metadata: Metadata = {
-  title: 'AI-Powered Recipe Generator',
-  description: 'Generate recipes based on your ingredients and preferences',
+  title: 'Recipe Generator',
+  description: 'Generate recipes based on your preferences',
 }
 
 export default function RootLayout({
@@ -13,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={`${inter.className} ${vt323.variable}`}>{children}</body>
     </html>
   )
 }
