@@ -96,16 +96,12 @@
 .pixel-checkbox {
   width: 20px;
   height: 20px;
-  border: 3px solid var(--pixel-border);
-  background: var(--pixel-background);
   position: relative;
   cursor: pointer;
   transition: all 0.1s ease;
 }
 
-.pixel-checkbox:hover {
-  background: var(--pixel-accent);
-}
+
 
 .pixel-checkbox:checked {
   background: var(--pixel-primary);

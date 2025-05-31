@@ -35,6 +35,14 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
     'Kosher',
   ];
 
+  const handleRestrictionToggle = (restriction: string) => {
+    const current = preferences.dietaryRestrictions || [];
+    const updated = current.includes(restriction)
+      ? current.filter((r) => r !== restriction)
+      : [...current, restriction];
+    handleChange('dietaryRestrictions', updated);
+  };
+
   return (
     <div className="space-y-8">
       <div>
@@ -48,23 +56,11 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
                   ? 'bg-primary/10 border-primary'
                   : 'hover:bg-accent/50'
               }`}
-              onClick={() => {
-                const current = preferences.dietaryRestrictions || [];
-                const updated = current.includes(restriction)
-                  ? current.filter((r) => r !== restriction)
-                  : [...current, restriction];
-                handleChange('dietaryRestrictions', updated);
-              }}
+              onClick={() => handleRestrictionToggle(restriction)}
             >
               <Checkbox
                 checked={preferences.dietaryRestrictions?.includes(restriction)}
-                onCheckedChange={(checked) => {
-                  const current = preferences.dietaryRestrictions || [];
-                  const updated = checked
-                    ? [...current, restriction]
-                    : current.filter((r) => r !== restriction);
-                  handleChange('dietaryRestrictions', updated);
-                }}
+                onCheckedChange={() => handleRestrictionToggle(restriction)}
                 className="pixel-checkbox"
               />
               <span className="text-sm font-medium pixel-text">
