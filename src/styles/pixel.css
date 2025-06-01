@@ -9,6 +9,16 @@
   --pixel-hover: #00BBF9;      /* Bright blue */
 }
 
+.dark {
+  --pixel-primary: #00BBF9;    /* Bright blue */
+  --pixel-secondary: #F15BB5;  /* Bright pink */
+  --pixel-accent: #FEE440;     /* Bright yellow */
+  --pixel-background: #2D2D2A; /* Dark gray */
+  --pixel-text: #F7F7F7;       /* Light gray */
+  --pixel-border: #F7F7F7;     /* Light gray */
+  --pixel-hover: #F15BB5;      /* Bright pink */
+}
+
 .pixel-art {
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
