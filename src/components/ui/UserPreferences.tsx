@@ -105,7 +105,7 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
           }
         >
           <SelectTrigger className="pixel-select">
-            <SelectValue placeholder="Select time preference" />
+            <SelectValue chevron={false} placeholder="Select time preference" />
           </SelectTrigger>
           <SelectContent className="pixel-card">
             <SelectItem value="quick" className="pixel-text">Quick (15-30 mins)</SelectItem>

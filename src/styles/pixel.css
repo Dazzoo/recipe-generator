@@ -179,8 +179,10 @@
   box-shadow: 1px 1px 0 var(--pixel-border) !important;
 }
 
+
+
 .pixel-slider [data-slot="slider-thumb"]:hover {
-  transform: translate(1px, 1px) !important;
+  transform: scale(1.1) !important;
   box-shadow: none !important;
 }
 
