@@ -52,33 +52,33 @@ export function IngredientInput({ onIngredientsChange }: IngredientInputProps) {
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Ingredient name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Ingredient name"
             className="w-full pixel-input"
           />
         </div>
         <div className="flex gap-4">
           <Input
             type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
             placeholder="Qty"
             className="w-20 pixel-input"
-          />
+        />
           <Input
-            type="text"
-            value={unit}
-            onChange={(e) => setUnit(e.target.value)}
-            placeholder="Unit"
+          type="text"
+          value={unit}
+          onChange={(e) => setUnit(e.target.value)}
+          placeholder="Unit"
             className="w-24 pixel-input"
-          />
+        />
           <Button
-            onClick={handleAddIngredient}
+          onClick={handleAddIngredient}
             className="whitespace-nowrap pixel-button"
-          >
-            Add
+        >
+          Add
           </Button>
         </div>
       </div>

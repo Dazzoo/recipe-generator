@@ -33,6 +33,16 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
     'Nut-Free',
     'Halal',
     'Kosher',
+    'Pescatarian',
+    'Low-Carb',
+    'Keto',
+    'Paleo',
+    'Low-FODMAP',
+    'Soy-Free',
+    'Egg-Free',
+    'Shellfish-Free',
+    'Low-Sodium',
+    'Sugar-Free',
   ];
 
   const handleRestrictionToggle = (restriction: string) => {
@@ -58,13 +68,9 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
               }`}
               onClick={() => handleRestrictionToggle(restriction)}
             >
-              <Checkbox
-                checked={preferences.dietaryRestrictions?.includes(restriction)}
-                onCheckedChange={() => handleRestrictionToggle(restriction)}
-                className="pixel-checkbox"
-              />
-              <span className="text-sm font-medium pixel-text">
-                {restriction}
+
+              <span className="text-sm font-medium pixel-text select-none">
+                {restriction} {preferences.dietaryRestrictions?.includes(restriction) ? '✅' : '❌'}
               </span>
             </Card>
           ))}
@@ -109,7 +115,7 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
         </Select>
       </div>
 
-      <div>
+      <div className=''>
         <label className="text-sm font-medium mb-3 block pixel-text">
           Serving Size: {preferences.servingSize}
         </label>
@@ -120,7 +126,7 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
             max={12}
             step={1}
             onValueChange={([value]) => handleChange('servingSize', value)}
-            className="flex-1 pixel-slider"
+            className="flex-1 pixel-slider "
           />
         </div>
       </div>
