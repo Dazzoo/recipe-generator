@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import React, { useState, useCallback } from 'react';
-import { IngredientInput } from '@/components/ui/IngredientInput';
-import { UserPreferences } from '@/components/ui/UserPreferences';
-import { RecipeList } from '@/components/ui/RecipeList';
-import type { Ingredient, UserPreferences as UserPreferencesType, Recipe } from '@/types';
+import React, { useState, useCallback } from "react";
+import { IngredientInput } from "@/components/ui/IngredientInput";
+import { UserPreferences } from "@/components/ui/UserPreferences";
+import { RecipeList } from "@/components/ui/RecipeList";
+import type {
+  Ingredient,
+  UserPreferences as UserPreferencesType,
+  Recipe,
+} from "@/types";
 
 export default function HomePage() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [preferences, setPreferences] = useState<Partial<UserPreferencesType>>({});
+  const [preferences, setPreferences] = useState<Partial<UserPreferencesType>>(
+    {}
+  );
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,10 +23,10 @@ export default function HomePage() {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/recipes/generate', {
-        method: 'POST',
+      const response = await fetch("/api/recipes/generate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ingredients,
@@ -29,13 +35,13 @@ export default function HomePage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate recipes');
+        throw new Error("Failed to generate recipes");
       }
 
       const recipe = await response.json();
       setRecipes([recipe]);
     } catch (error) {
-      console.error('Error generating recipes:', error);
+      console.error("Error generating recipes:", error);
       // TODO: Add error handling UI
     } finally {
       setIsLoading(false);
@@ -49,7 +55,9 @@ export default function HomePage() {
     }
   };
 
-  const handlePreferencesChange = (newPreferences: Partial<UserPreferencesType>) => {
+  const handlePreferencesChange = (
+    newPreferences: Partial<UserPreferencesType>
+  ) => {
     setPreferences(newPreferences);
     if (ingredients.length > 0) {
       generateRecipes();
@@ -57,11 +65,13 @@ export default function HomePage() {
   };
 
   const handleFavoriteToggle = (recipeId: string) => {
-    setRecipes(recipes.map(recipe =>
-      recipe.id === recipeId
-        ? { ...recipe, isFavorite: !recipe.isFavorite }
-        : recipe
-    ));
+    setRecipes(
+      recipes.map((recipe) =>
+        recipe.id === recipeId
+          ? { ...recipe, isFavorite: !recipe.isFavorite }
+          : recipe
+      )
+    );
   };
 
   return (
@@ -72,10 +82,11 @@ export default function HomePage() {
             AI-Powered Recipe Generator
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover delicious recipes based on ingredients you have and your cooking preferences
+            Discover delicious recipes based on ingredients you have and your
+            cooking preferences
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-8">
             <section className="bg-card rounded-2xl shadow-sm p-6">
@@ -100,7 +111,9 @@ export default function HomePage() {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"></div>
-                <p className="mt-4 text-muted-foreground text-lg">Generating your perfect recipe...</p>
+                <p className="mt-4 text-muted-foreground text-lg">
+                  Generating your perfect recipe...
+                </p>
               </div>
             ) : (
               <RecipeList
@@ -113,4 +126,4 @@ export default function HomePage() {
       </div>
     </main>
   );
-} 
+}
