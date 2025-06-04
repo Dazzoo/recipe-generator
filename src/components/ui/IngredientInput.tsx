@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import type { Ingredient } from "@/types";
 import { Input } from "@/components/ui/shadcn/input";
 import { Button } from "@/components/ui/shadcn/button";
@@ -42,6 +42,7 @@ const COMMON_UNITS = [
   { value: "can", label: "can" },
   { value: "jar", label: "jar" },
   { value: "pack", label: "pack" },
+  { value: "to taste", label: "to taste" },
 ];
 
 export function IngredientInput({ onIngredientsChange }: IngredientInputProps) {
@@ -57,6 +58,11 @@ export function IngredientInput({ onIngredientsChange }: IngredientInputProps) {
   const isFormValid = useMemo(() => {
     return name.trim() && quantity.trim() && unit.trim();
   }, [name, quantity, unit]);
+
+  // Focus name input on component mount
+  useEffect(() => {
+    nameInputRef.current?.focus();
+  }, []);
 
   const focusEmptyField = () => {
     if (!name.trim()) {
@@ -102,23 +108,54 @@ export function IngredientInput({ onIngredientsChange }: IngredientInputProps) {
   };
 
   const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    field: "name" | "quantity"
+    e: React.KeyboardEvent<HTMLInputElement | HTMLButtonElement>,
+    field: 'name' | 'quantity' | 'unit' | 'add'
   ) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
-
-      if (field === "name") {
+      
+      if (field === 'name') {
         if (!name.trim()) {
           nameInputRef.current?.focus();
           return;
         }
         quantityInputRef.current?.focus();
-      } else if (field === "quantity") {
+      } else if (field === 'quantity') {
         if (!quantity.trim()) {
           quantityInputRef.current?.focus();
           return;
         }
+        unitSelectRef.current?.focus();
+      } else if (field === 'unit') {
+        if (!unit.trim()) {
+          unitSelectRef.current?.focus();
+          return;
+        }
+        if (isFormValid) {
+          handleAddIngredient();
+        }
+      } else if (field === 'add' && isFormValid) {
+        handleAddIngredient();
+      }
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      if (field === 'name') {
+        quantityInputRef.current?.focus();
+      } else if (field === 'quantity') {
+        unitSelectRef.current?.focus();
+      } else if (field === 'unit') {
+        if (isFormValid) {
+          const addButton = document.querySelector('[data-add-button]') as HTMLButtonElement;
+          addButton?.focus();
+        }
+      }
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      if (field === 'quantity') {
+        nameInputRef.current?.focus();
+      } else if (field === 'unit') {
+        quantityInputRef.current?.focus();
+      } else if (field === 'add') {
         unitSelectRef.current?.focus();
       }
     }
@@ -133,7 +170,7 @@ export function IngredientInput({ onIngredientsChange }: IngredientInputProps) {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => handleKeyDown(e, "name")}
+            onKeyDown={(e) => handleKeyDown(e, 'name')}
             placeholder="Ingredient name"
             className="w-full pixel-input"
           />
@@ -144,18 +181,22 @@ export function IngredientInput({ onIngredientsChange }: IngredientInputProps) {
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            onKeyDown={(e) => handleKeyDown(e, "quantity")}
+            onKeyDown={(e) => handleKeyDown(e, 'quantity')}
             placeholder="Qty"
             className="w-20 pixel-input"
           />
           <Select value={unit} onValueChange={setUnit}>
-            <SelectTrigger ref={unitSelectRef} className="w-32 pixel-select">
+            <SelectTrigger 
+              ref={unitSelectRef} 
+              className="w-32 pixel-select"
+              onKeyDown={(e) => handleKeyDown(e, 'unit')}
+            >
               <SelectValue placeholder="Unit" />
             </SelectTrigger>
             <SelectContent className="pixel-card">
               {COMMON_UNITS.map((unit) => (
-                <SelectItem
-                  key={unit.value}
+                <SelectItem 
+                  key={unit.value} 
                   value={unit.value}
                   className="pixel-text"
                 >
@@ -167,7 +208,9 @@ export function IngredientInput({ onIngredientsChange }: IngredientInputProps) {
           <Button
             onClick={handleAddIngredient}
             disabled={!isFormValid}
-            className="whitespace-nowrap pixel-button disabled:opacity-50 disabled:cursor-not-allowed"
+            className="whitespace-nowrap pixel-button disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 focus:bg-primary/90 focus:ring-2 focus:ring-primary/50 transition-colors"
+            onKeyDown={(e) => handleKeyDown(e, 'add')}
+            data-add-button
           >
             Add
           </Button>
