@@ -1,4 +1,19 @@
+import { z } from 'zod';
 import { Ingredient, Unit } from "@/types";
+
+export const ingredientFormSchema = z.object({
+  name: z.string().min(3, 'Name must be at least 3 characters'),
+  quantity: z.string().refine(
+    (val) => {
+      const num = parseFloat(val);
+      return !isNaN(num) && num > 0;
+    },
+    'Quantity must be greater than 0'
+  ),
+  unit: z.string().min(1, 'Please select a unit'),
+});
+
+export type IngredientFormData = z.infer<typeof ingredientFormSchema>;
 
 export const COMMON_UNITS = [
   { value: 'g', label: 'grams' },

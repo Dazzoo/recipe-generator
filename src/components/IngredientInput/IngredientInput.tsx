@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { COMMON_UNITS, type Ingredient } from "@/types";
+import { z } from "zod";
+import { COMMON_UNITS, type Ingredient, type Unit } from "@/types";
 import { Input } from "@/components/shadcn/input";
 import { Button } from "@/components/shadcn/button";
 import { Card } from "@/components/shadcn/card";
@@ -13,135 +14,174 @@ import {
   SelectValue,
 } from "@/components/shadcn/select";
 import { X } from "lucide-react";
-import { validateIngredientForm, createIngredient, handleIngredientKeyNavigation } from "@/lib/ingredients";
+import { useToast } from "@/hooks/useToast";
+import { 
+  validateIngredientForm, 
+  createIngredient, 
+  handleIngredientKeyNavigation,
+  ingredientFormSchema,
+  type IngredientFormData
+} from "@/lib/ingredients";
 
 interface IngredientInputProps {
-  onIngredientsChange: (ingredients: Ingredient[]) => void;
+  onRecipeGenerated: (recipe: any) => void;
 }
 
-export function IngredientInput({ onIngredientsChange }: IngredientInputProps) {
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [name, setName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState("");
+const ingredientSchema = z.object({
+  name: z.string().min(1, "Ingredient name is required"),
+  quantity: z.number().min(0.1, "Quantity must be greater than 0"),
+  unit: z.enum(["g", "kg", "ml", "l", "tsp", "tbsp", "cup", "oz", "lb", "pinch", "piece", "whole"] as const, {
+    required_error: "Unit is required",
+  }),
+});
+
+type Ingredient = z.infer<typeof ingredientSchema> & { id: number };
+
+const UNITS = ["g", "kg", "ml", "l", "tsp", "tbsp", "cup", "oz", "lb", "pinch", "piece", "whole"] as const;
+
+export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
+  const [ingredients, setIngredients] = useState<Ingredient[]>([{ id: Date.now(), name: "", quantity: 0, unit: "g" }]);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const nameInputRef = useRef<HTMLInputElement>(null);
   const quantityInputRef = useRef<HTMLInputElement>(null);
   const unitSelectRef = useRef<HTMLButtonElement>(null);
 
-  const isFormValid = validateIngredientForm(name, quantity, unit);
-
-  // Focus name input on component mount
   useEffect(() => {
-    nameInputRef.current?.focus();
-  }, []);
+    // Focus on the first ingredient's name input
+    const firstInput = document.querySelector('input[name="name-0"]') as HTMLInputElement;
+    if (firstInput) {
+      firstInput.focus();
+    }
+  }, []); // Empty dependency array means this runs once on mount
 
-  useEffect(() => {
-    onIngredientsChange(ingredients);
-  }, [ingredients, onIngredientsChange]);
-
-  const handleAddIngredient = () => {
-    if (!isFormValid) return;
-
-    const newIngredient = createIngredient(name, quantity, unit);
-    setIngredients([...ingredients, newIngredient]);
-    setName('');
-    setQuantity('');
-    setUnit('');
-    nameInputRef.current?.focus();
+  const addIngredient = () => {
+    setIngredients([...ingredients, { id: Date.now(), name: "", quantity: 0, unit: "g" }]);
   };
 
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement | HTMLButtonElement>,
-    field: 'name' | 'quantity' | 'unit' | 'add'
-  ) => {
-    handleIngredientKeyNavigation(e, field, isFormValid, {
-      nameInputRef,
-      quantityInputRef,
-      unitSelectRef
-    }, handleAddIngredient);
+  const updateIngredient = (id: number, field: keyof Ingredient, value: string | number) => {
+    setIngredients(ingredients.map(ing => 
+      ing.id === id ? { ...ing, [field]: value } : ing
+    ));
   };
 
-  const handleRemoveIngredient = (id: string) => {
+  const removeIngredient = (id: number) => {
     setIngredients(ingredients.filter(ing => ing.id !== id));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      // Validate all ingredients
+      ingredients.forEach((ingredient, index) => {
+        ingredientSchema.parse(ingredient);
+      });
+
+      const response = await fetch("/api/recipes/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredients }),
+      });
+
+      if (!response.ok) throw new Error("Failed to generate recipe");
+      const data = await response.json();
+      onRecipeGenerated(data);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Get the first error and focus the field
+        const firstError = error.errors[0];
+        const fieldName = firstError.path[0];
+        const index = ingredients.length - 1;
+        
+        toast({
+          variant: "destructive",
+          title: "Validation Error",
+          description: `Ingredient ${index + 1}: ${firstError.message}`,
+        });
+
+        // Focus the invalid field
+        const element = document.querySelector(`[name="${fieldName}-${index}"]`) as HTMLElement;
+        if (element) element.focus();
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error instanceof Error ? error.message : "An error occurred",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1">
+    <form onSubmit={handleSubmit} className="space-y-4" onKeyDown={(e) => {
+      if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+        e.preventDefault();
+      }
+    }}>
+      {ingredients.map((ingredient, index) => (
+        <div key={ingredient.id} className="flex gap-2 items-start">
           <Input
-            ref={nameInputRef}
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => handleKeyDown(e, 'name')}
+            name={`name-${index}`}
             placeholder="Ingredient name"
-            className="w-full pixel-input"
+            value={ingredient.name}
+            onChange={(e) => updateIngredient(ingredient.id, "name", e.target.value)}
+            className="flex-1 bg-white dark:bg-gray-950"
           />
-        </div>
-        <div className="flex gap-4">
           <Input
-            ref={quantityInputRef}
+            name={`quantity-${index}`}
             type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            onKeyDown={(e) => handleKeyDown(e, 'quantity')}
             placeholder="Qty"
-            className="w-20 pixel-input"
+            value={ingredient.quantity}
+            onChange={(e) => updateIngredient(ingredient.id, "quantity", parseFloat(e.target.value) || 0)}
+            className="w-20 bg-white dark:bg-gray-950"
           />
-          <Select value={unit} onValueChange={setUnit}>
-            <SelectTrigger 
-              ref={unitSelectRef} 
-              className="w-32 pixel-select"
-              onKeyDown={(e) => handleKeyDown(e, 'unit')}
-            >
+          <Select
+            name={`unit-${index}`}
+            value={ingredient.unit}
+            onValueChange={(value) => updateIngredient(ingredient.id, "unit", value)}
+          >
+            <SelectTrigger className="w-32 bg-white dark:bg-gray-950">
               <SelectValue placeholder="Unit" />
             </SelectTrigger>
-            <SelectContent className="pixel-card">
-              {COMMON_UNITS.map((unit) => (
-                <SelectItem 
-                  key={unit.value} 
-                  value={unit.value}
-                  className="pixel-text"
-                >
-                  {unit.label}
+            <SelectContent>
+              {UNITS.map((unit) => (
+                <SelectItem key={unit} value={unit}>
+                  {unit}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Button
-            onClick={handleAddIngredient}
-            disabled={!isFormValid}
-            className="whitespace-nowrap pixel-button disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 hover:text-white focus:bg-primary/90 focus:text-white focus:ring-2 focus:ring-primary/50 transition-all"
-            onKeyDown={(e) => handleKeyDown(e, 'add')}
-            data-add-button
-          >
-            Add
-          </Button>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        {ingredients.map((ingredient) => (
-          <Card
-            key={ingredient.id}
-            className="p-4 flex-row items-center justify-between hover:bg-accent/50 transition-colors pixel-card"
-          >
-            <span className="text-sm pixel-text">
-              {ingredient.quantity} {ingredient.unit} {ingredient.name}
-            </span>
+          {ingredients.length > 1 && (
             <Button
+              type="button"
               variant="ghost"
               size="icon"
-              onClick={() => handleRemoveIngredient(ingredient.id)}
-              className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 pixel-button"
+              onClick={() => removeIngredient(ingredient.id)}
+              className="shrink-0"
             >
               <X className="h-4 w-4" />
             </Button>
-          </Card>
-        ))}
+          )}
+        </div>
+      ))}
+      <div className="flex gap-2">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={addIngredient} 
+          className="border-primary text-primary hover:bg-primary/10 hover:text-primary/90"
+        >
+          Add Ingredient
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Generating..." : "Generate Recipe"}
+        </Button>
       </div>
-    </div>
+    </form>
   );
 }

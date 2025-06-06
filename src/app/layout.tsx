@@ -4,6 +4,7 @@ import { Inter, VT323 } from 'next/font/google'
 import '@/styles/pixel.css'
 import { ThemeToggle } from '@/components/Theme/ThemeToggle'
 import { ThemeProvider } from '@/components/Theme/ThemeProvider'
+import { Toaster } from "@/components/shadcn/toaster"
 
 const inter = Inter({ subsets: ['latin'] })
 const vt323 = VT323({ 
@@ -14,7 +15,7 @@ const vt323 = VT323({
 
 export const metadata: Metadata = {
   title: 'Recipe Generator',
-  description: 'Generate recipes based on your preferences',
+  description: 'Generate recipes based on your ingredients',
 }
 
 export default function RootLayout({
@@ -35,6 +36,7 @@ export default function RootLayout({
             <ThemeToggle />
           </div>
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
