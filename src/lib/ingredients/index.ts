@@ -114,12 +114,15 @@ export const handleIngredientKeyNavigation = (
 ) => {
   switch (e.key) {
     case 'Enter':
+      e.preventDefault();
       handleEnterKey(field, isFormValid, refs, onAdd);
       break;
     case 'ArrowRight':
+      e.preventDefault();
       handleArrowRight(field, isFormValid, refs);
       break;
     case 'ArrowLeft':
+      e.preventDefault();
       handleArrowLeft(field, refs);
       break;
   }
