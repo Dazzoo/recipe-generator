@@ -8,6 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/shadcn/slider';
 import { X, Check } from 'lucide-react';
 import { Button } from '@/components/shadcn/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/shadcn/tooltip";
 
 interface UserPreferencesProps {
   onPreferencesChange: (preferences: Partial<UserPreferencesType>) => void;
@@ -63,27 +69,33 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
   return (
     <div className="space-y-6 sm:space-y-8">
       <div>
-        <label className="text-sm sm:text-base font-medium mb-2 sm:mb-3 block pixel-text">Dietary Restrictions</label>
-        <div className="flex flex-wrap gap-1.5 sm:gap-2">
+        <label className="text-sm sm:text-base font-medium mb-2 sm:mb-3 block">Dietary Restrictions</label>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
           {dietaryRestrictions.map((restriction) => (
-            <Card
+            <Button
               key={restriction}
+              variant={preferences.dietaryRestrictions?.includes(restriction) ? "default" : "outline"}
               onClick={() => handleRestrictionToggle(restriction)}
-              className={`px-2 py-1 flex items-center gap-1 cursor-pointer transition-colors pixel-card ${
-                preferences.dietaryRestrictions?.includes(restriction)
-                  ? 'bg-primary/10 border-primary'
-                  : 'hover:bg-accent/50'
-              }`}
+              className="justify-start h-auto py-2 px-3 text-sm relative"
             >
-              <span className="text-xs font-medium pixel-text select-none">
-                {restriction}
-              </span>
-              {preferences.dietaryRestrictions?.includes(restriction) ? (
-                <Check className="h-3.5 w-3.5 text-green-500" />
-              ) : (
-                <X className="h-3.5 w-3.5 text-red-500" />
-              )}
-            </Card>
+              <div className="w-4 h-4 flex-shrink-0 mr-2 flex items-center justify-center">
+                {preferences.dietaryRestrictions?.includes(restriction) ? (
+                  <Check className="h-4 w-4 text-primary-foreground" />
+                ) : (
+                  <div className="h-4 w-4 border rounded-sm" />
+                )}
+              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="truncate">{restriction}</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{restriction}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </Button>
           ))}
         </div>
       </div>
