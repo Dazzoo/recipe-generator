@@ -127,9 +127,14 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
       </div>
 
       <div>
-        <label className="text-sm sm:text-base font-medium mb-2 sm:mb-3 block pixel-text">
-          Serving Size: {preferences.servingSize}
-        </label>
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <label className="text-base sm:text-lg font-medium pixel-text">
+            Serving Size
+          </label>
+          <span className="text-lg sm:text-xl font-bold text-primary pixel-text">
+            {preferences.servingSize}
+          </span>
+        </div>
         <div className="flex items-center gap-4">
           <Slider
             value={[preferences.servingSize || 2]}
@@ -137,8 +142,12 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
             max={12}
             step={1}
             onValueChange={([value]) => handleChange('servingSize', value)}
-            className="flex-1 h-8 sm:h-10 pixel-slider"
+            className="flex-1 h-12 sm:h-14 pixel-slider cursor-pointer"
           />
+        </div>
+        <div className="flex justify-between mt-1 text-xs text-muted-foreground pixel-text">
+          <span>1</span>
+          <span>12</span>
         </div>
       </div>
     </div>
