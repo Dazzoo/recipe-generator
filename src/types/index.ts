@@ -1,3 +1,5 @@
+import { Unit } from '@/lib/utils';
+
 export interface User {
   id: string;
   name: string | null;
@@ -32,8 +34,10 @@ export interface Recipe {
   updatedAt: Date;
 }
 
+
 export interface Ingredient {
+  id: string;
   name: string;
-  quantity?: number;
-  unit?: string;
+  quantity: string;
+  unit: Unit;
 } 
