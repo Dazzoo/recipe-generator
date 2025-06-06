@@ -4,8 +4,8 @@ import React from 'react';
 import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Recipe } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/shadcn/card';
-import { Button } from '@/components/ui/shadcn/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/shadcn/card';
+import { Button } from '@/components/shadcn/button';
 
 interface RecipeCardProps {
   recipe: Recipe;

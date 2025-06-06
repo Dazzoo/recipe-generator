@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import type { UserPreferences as UserPreferencesType } from '@/types';
-import { Card } from '@/components/ui/shadcn/card';
-import { Checkbox } from '@/components/ui/shadcn/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select';
-import { Slider } from '@/components/ui/shadcn/slider';
+import { Card } from '@/components/shadcn/card';
+import { Checkbox } from '@/components/shadcn/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select';
+import { Slider } from '@/components/shadcn/slider';
 import { X, Check } from 'lucide-react';
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/shadcn/button';
 
 interface UserPreferencesProps {
   onPreferencesChange: (preferences: Partial<UserPreferencesType>) => void;

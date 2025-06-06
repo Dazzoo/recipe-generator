@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { IngredientInput } from "@/components/ui/IngredientInput";
-import { UserPreferences } from "@/components/ui/UserPreferences";
-import { RecipeList } from "@/components/ui/RecipeList";
+import { IngredientInput } from "@/components/IngredientInput/IngredientInput";
+import { UserPreferences } from "@/components/UserPreferences";
+import { RecipeList } from "@/components/Recipe/RecipeList";
 import type {
   Ingredient,
   UserPreferences as UserPreferencesType,

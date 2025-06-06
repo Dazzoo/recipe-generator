@@ -1,19 +1,19 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import type { Ingredient } from "@/types";
-import { Input } from "@/components/ui/shadcn/input";
-import { Button } from "@/components/ui/shadcn/button";
-import { Card } from "@/components/ui/shadcn/card";
+import { COMMON_UNITS, type Ingredient } from "@/types";
+import { Input } from "@/components/shadcn/input";
+import { Button } from "@/components/shadcn/button";
+import { Card } from "@/components/shadcn/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/shadcn/select";
+} from "@/components/shadcn/select";
 import { X } from "lucide-react";
-import { COMMON_UNITS, validateIngredientForm, createIngredient, handleIngredientKeyNavigation } from '@/lib/utils';
+import { validateIngredientForm, createIngredient, handleIngredientKeyNavigation } from "@/lib/ingredients";
 
 interface IngredientInputProps {
   onIngredientsChange: (ingredients: Ingredient[]) => void;

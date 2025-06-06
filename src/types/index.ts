@@ -1,4 +1,3 @@
-import { Unit } from '@/lib/utils';
 
 export interface User {
   id: string;
@@ -41,3 +40,20 @@ export interface Ingredient {
   quantity: string;
   unit: Unit;
 } 
+
+export const COMMON_UNITS = [
+  { value: 'g', label: 'grams' },
+  { value: 'kg', label: 'kilograms' },
+  { value: 'ml', label: 'milliliters' },
+  { value: 'l', label: 'liters' },
+  { value: 'tsp', label: 'teaspoons' },
+  { value: 'tbsp', label: 'tablespoons' },
+  { value: 'cup', label: 'cups' },
+  { value: 'oz', label: 'ounces' },
+  { value: 'lb', label: 'pounds' },
+  { value: 'pinch', label: 'pinch' },
+  { value: 'piece', label: 'piece' },
+  { value: 'whole', label: 'whole' },
+] as const;
+
+export type Unit = typeof COMMON_UNITS[number]['value'];
