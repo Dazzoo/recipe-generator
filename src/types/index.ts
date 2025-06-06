@@ -34,13 +34,6 @@ export interface Recipe {
 }
 
 
-export interface Ingredient {
-  id: string;
-  name: string;
-  quantity: string;
-  unit: Unit;
-} 
-
 export const COMMON_UNITS = [
   { value: 'g', label: 'grams' },
   { value: 'kg', label: 'kilograms' },

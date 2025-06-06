@@ -2,10 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { z } from "zod";
-import { COMMON_UNITS, type Ingredient, type Unit } from "@/types";
 import { Input } from "@/components/shadcn/input";
 import { Button } from "@/components/shadcn/button";
-import { Card } from "@/components/shadcn/card";
 import {
   Select,
   SelectContent,
@@ -15,21 +13,22 @@ import {
 } from "@/components/shadcn/select";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
-import { 
-  validateIngredientForm, 
-  createIngredient, 
-  handleIngredientKeyNavigation,
-  ingredientFormSchema,
-  type IngredientFormData
-} from "@/lib/ingredients";
 
 interface IngredientInputProps {
   onRecipeGenerated: (recipe: any) => void;
 }
 
 const ingredientSchema = z.object({
-  name: z.string().min(1, "Ingredient name is required"),
-  quantity: z.number().min(0.1, "Quantity must be greater than 0"),
+  name: z.string()
+    .min(3, "Name must be at least 3 characters")
+    .regex(/^[a-zA-Z\s]+$/, "Ingredient name can only contain letters and spaces"),
+  quantity: z.number()
+    .min(0.01, "Quantity must be greater than 0")
+    .refine((val) => {
+      // Check if the number has at most 2 decimal places
+      const str = val.toString();
+      return /^\d+(\.\d{0,2})?$/.test(str);
+    }, "Please enter a valid number with up to 2 decimal places (e.g., 1, 1.5, 2.25)"),
   unit: z.enum(["g", "kg", "ml", "l", "tsp", "tbsp", "cup", "oz", "lb", "pinch", "piece", "whole"] as const, {
     required_error: "Unit is required",
   }),
@@ -75,10 +74,34 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
     setIsLoading(true);
 
     try {
-      // Validate all ingredients
-      ingredients.forEach((ingredient, index) => {
-        ingredientSchema.parse(ingredient);
-      });
+      // Validate ingredients in sequence
+      for (let i = 0; i < ingredients.length; i++) {
+        try {
+          ingredientSchema.parse(ingredients[i]);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            const firstError = error.errors[0];
+            const fieldName = firstError.path[0];
+            
+            toast({
+              variant: "destructive",
+              title: "Validation Error",
+              description: firstError.message,
+            });
+
+            // Focus the invalid field
+            const element = document.querySelector(`[name="${fieldName}-${i}"]`) as HTMLElement;
+            if (element) {
+              element.focus();
+              // If it's a select element, we need to click it to open the dropdown
+              if (element instanceof HTMLSelectElement) {
+                element.click();
+              }
+            }
+            return; // Stop validation at first error
+          }
+        }
+      }
 
       const response = await fetch("/api/recipes/generate", {
         method: "POST",
@@ -90,22 +113,7 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
       const data = await response.json();
       onRecipeGenerated(data);
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        // Get the first error and focus the field
-        const firstError = error.errors[0];
-        const fieldName = firstError.path[0];
-        const index = ingredients.length - 1;
-        
-        toast({
-          variant: "destructive",
-          title: "Validation Error",
-          description: `Ingredient ${index + 1}: ${firstError.message}`,
-        });
-
-        // Focus the invalid field
-        const element = document.querySelector(`[name="${fieldName}-${index}"]`) as HTMLElement;
-        if (element) element.focus();
-      } else {
+      if (!(error instanceof z.ZodError)) {
         toast({
           variant: "destructive",
           title: "Error",
@@ -118,34 +126,54 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" onKeyDown={(e) => {
+    <form onSubmit={handleSubmit} className="space-y-4 w-full" onKeyDown={(e) => {
       if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
         e.preventDefault();
       }
     }}>
+      <div className="grid grid-cols-[minmax(0,1fr)_80px_128px_40px] gap-2 w-full">
+        <div>
+          <label className="text-sm font-medium mb-1.5 block">Ingredient</label>
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-1.5 block">Amount</label>
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-1.5 block">Unit</label>
+        </div>
+        <div></div>
+      </div>
       {ingredients.map((ingredient, index) => (
-        <div key={ingredient.id} className="flex gap-2 items-start">
+        <div key={ingredient.id} className="grid grid-cols-[minmax(0,1fr)_80px_128px_40px] gap-2 w-full">
           <Input
             name={`name-${index}`}
             placeholder="Ingredient name"
             value={ingredient.name}
             onChange={(e) => updateIngredient(ingredient.id, "name", e.target.value)}
-            className="flex-1 bg-white dark:bg-gray-950"
+            className="bg-white dark:bg-gray-950 w-full"
           />
           <Input
             name={`quantity-${index}`}
             type="number"
             placeholder="Qty"
             value={ingredient.quantity}
-            onChange={(e) => updateIngredient(ingredient.id, "quantity", parseFloat(e.target.value) || 0)}
-            className="w-20 bg-white dark:bg-gray-950"
+            onChange={(e) => {
+              const value = e.target.value;
+              // Allow numbers with up to 2 decimal places
+              if (value === '' || /^\d+(\.\d{0,2})?$/.test(value)) {
+                updateIngredient(ingredient.id, "quantity", value === '' ? 0 : parseFloat(value));
+              }
+            }}
+            min="0.00"
+            step="0.10"
+            className="bg-white dark:bg-gray-950 w-full"
           />
           <Select
             name={`unit-${index}`}
             value={ingredient.unit}
             onValueChange={(value) => updateIngredient(ingredient.id, "unit", value)}
           >
-            <SelectTrigger className="w-32 bg-white dark:bg-gray-950">
+            <SelectTrigger className="bg-white dark:bg-gray-950 w-full">
               <SelectValue placeholder="Unit" />
             </SelectTrigger>
             <SelectContent>
@@ -162,7 +190,7 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
               variant="ghost"
               size="icon"
               onClick={() => removeIngredient(ingredient.id)}
-              className="shrink-0"
+              className="shrink-0 cursor-pointer"
             >
               <X className="h-4 w-4" />
             </Button>
