@@ -1,7 +1,6 @@
-import './globals.css'
+import '@/styles/globals.css'
 import type { Metadata } from 'next'
 import { Inter, VT323 } from 'next/font/google'
-import '@/styles/pixel.css'
 import { ThemeToggle } from '@/components/Theme/ThemeToggle'
 import { ThemeProvider } from '@/components/Theme/ThemeProvider'
 import { Toaster } from "@/components/shadcn/toaster"
