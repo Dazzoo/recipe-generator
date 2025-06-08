@@ -182,22 +182,24 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
                 step="0.10"
                 className="bg-white dark:bg-gray-950 w-full"
               />
-              <Select
-                name={`unit-${index}`}
-                value={ingredient.unit}
-                onValueChange={(value) => updateIngredient(ingredient.id, "unit", value)}
-              >
-                <SelectTrigger className="h-10 sm:h-11 bg-white dark:bg-gray-950 w-full">
-                  <SelectValue placeholder="Unit" />
-                </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-950 [&_[data-state=checked]]:bg-primary [&_[data-state=checked]]:text-white [&_[data-state=checked]]:dark:bg-primary/90 [&_[data-state=checked]]:dark:text-white [&_[data-state=checked]]:hover:bg-primary/90 [&_[data-state=checked]]:dark:hover:bg-primary/80 [&_[data-state=unchecked]]:hover:bg-gray-100 [&_[data-state=unchecked]]:dark:hover:bg-gray-900">
-                  {UNITS.map((unit) => (
-                    <SelectItem key={unit} value={unit} className="text-sm sm:text-base">
-                      {unit}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="w-full">
+                <Select
+                  name={`unit-${index}`}
+                  value={ingredient.unit}
+                  onValueChange={(value) => updateIngredient(ingredient.id, "unit", value)}
+                >
+                  <SelectTrigger className="h-10 sm:h-11 bg-white dark:bg-gray-950 w-full">
+                    <SelectValue placeholder="Unit" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-gray-950 [&_[data-state=checked]]:bg-primary [&_[data-state=checked]]:text-white [&_[data-state=checked]]:dark:bg-primary/90 [&_[data-state=checked]]:dark:text-white [&_[data-state=checked]]:hover:bg-primary/90 [&_[data-state=checked]]:dark:hover:bg-primary/80 [&_[data-state=unchecked]]:hover:bg-gray-100 [&_[data-state=unchecked]]:dark:hover:bg-gray-900">
+                    {UNITS.map((unit) => (
+                      <SelectItem key={unit} value={unit} className="text-sm sm:text-base">
+                        {unit}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               {ingredients.length > 1 && (
                 <Button
                   type="button"
