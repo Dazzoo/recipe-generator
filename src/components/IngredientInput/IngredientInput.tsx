@@ -24,8 +24,8 @@ interface IngredientInputProps {
 }
 
 export function IngredientInput({ onSubmit, isLoading, preferences }: IngredientInputProps) {
-  const [ingredients, setIngredients] = useState<Array<{ id: string; name: string; quantity: number; unit: Unit }>>([
-    { id: "1", name: "", quantity: 0, unit: "g" },
+  const [ingredients, setIngredients] = useState<Array<{ id: string; name: string; quantity?: number; unit?: Unit }>>([
+    { id: "1", name: "" },
   ]);
 
   const { toast } = useToast();
@@ -36,9 +36,11 @@ export function IngredientInput({ onSubmit, isLoading, preferences }: Ingredient
       .regex(/^[a-zA-Z\s]+$/, "Ingredient name can only contain letters and spaces"),
     quantity: z.number()
       .min(0.01, "Quantity must be greater than 0")
-      .max(1000, "Quantity must be less than 1000"),
+      .max(1000, "Quantity must be less than 1000")
+      .optional(),
     unit: z.string()
-      .min(1, "Unit is required"),
+      .min(1, "Unit is required")
+      .optional(),
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,7 +90,7 @@ export function IngredientInput({ onSubmit, isLoading, preferences }: Ingredient
   const addIngredient = () => {
     setIngredients([
       ...ingredients,
-      { id: Date.now().toString(), name: "", quantity: 0, unit: "g" },
+      { id: Date.now().toString(), name: "" },
     ]);
   };
 
@@ -96,7 +98,7 @@ export function IngredientInput({ onSubmit, isLoading, preferences }: Ingredient
     setIngredients(ingredients.filter((ing) => ing.id !== id));
   };
 
-  const updateIngredient = (id: string, field: "name" | "quantity" | "unit", value: string | number) => {
+  const updateIngredient = (id: string, field: "name" | "quantity" | "unit", value: string | number | undefined) => {
     setIngredients(
       ingredients.map((ing) =>
         ing.id === id ? { ...ing, [field]: value } : ing
@@ -129,8 +131,8 @@ export function IngredientInput({ onSubmit, isLoading, preferences }: Ingredient
 
         <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_80px_128px_40px] gap-2 w-full">
           <div className="text-sm font-medium text-muted-foreground">Ingredient</div>
-          <div className="hidden sm:block text-sm font-medium text-muted-foreground">Amount</div>
-          <div className="hidden sm:block text-sm font-medium text-muted-foreground">Unit</div>
+          <div className="hidden sm:block text-sm font-medium text-muted-foreground">Amount (optional)</div>
+          <div className="hidden sm:block text-sm font-medium text-muted-foreground">Unit (optional)</div>
           <div></div>
         </div>
 
@@ -148,12 +150,14 @@ export function IngredientInput({ onSubmit, isLoading, preferences }: Ingredient
                 name={`quantity-${index}`}
                 type="number"
                 placeholder="Qty"
-                value={ingredient.quantity}
+                value={ingredient.quantity ?? ''}
                 onChange={(e) => {
                   const value = e.target.value;
                   // Allow numbers with up to 2 decimal places
-                  if (value === '' || /^\d+(\.\d{0,2})?$/.test(value)) {
-                    updateIngredient(ingredient.id, "quantity", value === '' ? 0 : parseFloat(value));
+                  if (value === '') {
+                    updateIngredient(ingredient.id, "quantity", undefined);
+                  } else if (/^\d+(\.\d{0,2})?$/.test(value)) {
+                    updateIngredient(ingredient.id, "quantity", parseFloat(value));
                   }
                 }}
                 min="0.00"
@@ -170,7 +174,7 @@ export function IngredientInput({ onSubmit, isLoading, preferences }: Ingredient
                     }
                   }}
                 >
-                  <SelectTrigger className="h-10 sm:h-11 bg-white dark:bg-gray-950 w-full">
+                  <SelectTrigger className="h-10 sm:h-11 bg-white dark:bg-gray-950 w-full text-base sm:text-sm">
                     <SelectValue placeholder="Unit" />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-gray-950 [&_[data-state=checked]]:bg-primary [&_[data-state=checked]]:text-white [&_[data-state=checked]]:dark:bg-primary/90 [&_[data-state=checked]]:dark:text-white [&_[data-state=checked]]:hover:bg-primary/90 [&_[data-state=checked]]:dark:hover:bg-primary/80 [&_[data-state=unchecked]]:hover:bg-gray-100 [&_[data-state=unchecked]]:dark:hover:bg-gray-900">

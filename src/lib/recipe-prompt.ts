@@ -3,8 +3,8 @@ import type { UserPreferences } from "@/types";
 export interface Ingredient {
   id: string;
   name: string;
-  quantity: number;
-  unit: string;
+  quantity?: number;
+  unit?: string;
 }
 
 export interface RecipeResponse {
@@ -39,7 +39,16 @@ export function generateRecipePrompt(ingredients: Ingredient[], preferences: Use
   const servingSize = preferences.servingSize;
 
   const ingredientsList = ingredients
-    .map(ing => `${ing.quantity} ${ing.unit} of ${ing.name}`)
+    .map(ing => {
+      if (ing.quantity && ing.unit) {
+        return `${ing.quantity} ${ing.unit} of ${ing.name}`;
+      } else if (ing.quantity) {
+        return `${ing.quantity} of ${ing.name}`;
+      } else if (ing.unit) {
+        return `${ing.unit} of ${ing.name}`;
+      }
+      return ing.name;
+    })
     .join(", ");
 
   return `Create a recipe using the following ingredients: ${ingredientsList}
@@ -88,7 +97,8 @@ Make sure to:
 5. Keep within the time preference
 6. Provide clear, step-by-step instructions
 7. Include helpful tips
-8. Calculate approximate nutritional information`;
+8. Calculate approximate nutritional information
+9. If an ingredient doesn't have a specified quantity or unit, suggest appropriate amounts based on the recipe`;
 }
 
 export function validateRecipeResponse(response: unknown): RecipeResponse {
