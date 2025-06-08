@@ -127,84 +127,90 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
         e.preventDefault();
       }
     }}>
-      <div className="grid grid-cols-[minmax(0,1fr)_80px_128px_40px] gap-2 w-full">
-        <div>
-          <label className="text-sm font-medium mb-1.5 block">Ingredient</label>
-        </div>
-        <div>
-          <label className="text-sm font-medium mb-1.5 block">Amount</label>
-        </div>
-        <div>
-          <label className="text-sm font-medium mb-1.5 block">Unit</label>
-        </div>
-        <div></div>
-      </div>
-      {ingredients.map((ingredient, index) => (
-        <div key={ingredient.id} className="grid grid-cols-[minmax(0,1fr)_80px_128px_40px] gap-2 w-full">
-          <Input
-            name={`name-${index}`}
-            placeholder="Ingredient name"
-            value={ingredient.name}
-            onChange={(e) => updateIngredient(ingredient.id, "name", e.target.value)}
-            className="bg-white dark:bg-gray-950 w-full"
-          />
-          <Input
-            name={`quantity-${index}`}
-            type="number"
-            placeholder="Qty"
-            value={ingredient.quantity}
-            onChange={(e) => {
-              const value = e.target.value;
-              // Allow numbers with up to 2 decimal places
-              if (value === '' || /^\d+(\.\d{0,2})?$/.test(value)) {
-                updateIngredient(ingredient.id, "quantity", value === '' ? 0 : parseFloat(value));
-              }
-            }}
-            min="0.00"
-            step="0.10"
-            className="bg-white dark:bg-gray-950 w-full"
-          />
-          <Select
-            name={`unit-${index}`}
-            value={ingredient.unit}
-            onValueChange={(value) => updateIngredient(ingredient.id, "unit", value)}
-          >
-            <SelectTrigger className="h-10 sm:h-11 bg-white dark:bg-gray-950 w-full">
-              <SelectValue placeholder="Unit" />
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-950 [&_[data-state=checked]]:bg-primary [&_[data-state=checked]]:text-white [&_[data-state=checked]]:dark:bg-primary/90 [&_[data-state=checked]]:dark:text-white [&_[data-state=checked]]:hover:bg-primary/90 [&_[data-state=checked]]:dark:hover:bg-primary/80 [&_[data-state=unchecked]]:hover:bg-gray-100 [&_[data-state=unchecked]]:dark:hover:bg-gray-900">
-              {UNITS.map((unit) => (
-                <SelectItem key={unit} value={unit} className="text-sm sm:text-base">
-                  {unit}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {ingredients.length > 1 && (
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold">Ingredients</h3>
+            <span className="text-sm text-muted-foreground">({ingredients.length})</span>
+          </div>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <Button
               type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => removeIngredient(ingredient.id)}
-              className="shrink-0 cursor-pointer"
+              variant="outline" 
+              onClick={addIngredient} 
+              className="border-primary text-primary hover:bg-primary/10 hover:text-primary/90 cursor-pointer"
             >
-              <X className="h-4 w-4" />
+              Add Ingredient
             </Button>
-          )}
+            <Button type="submit" disabled={isLoading} className="cursor-pointer">
+              {isLoading ? "Generating..." : "Generate Recipe"}
+            </Button>
+          </div>
         </div>
-      ))}
-      <div className="flex gap-2">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={addIngredient} 
-          className="border-primary text-primary hover:bg-primary/10 hover:text-primary/90 cursor-pointer"
-        >
-          Add Ingredient
-        </Button>
-        <Button type="submit" disabled={isLoading} className="cursor-pointer">
-          {isLoading ? "Generating..." : "Generate Recipe"}
-        </Button>
+
+        <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_80px_128px_40px] gap-2 w-full">
+          <div className="text-sm font-medium text-muted-foreground">Ingredient</div>
+          <div className="hidden sm:block text-sm font-medium text-muted-foreground">Amount</div>
+          <div className="hidden sm:block text-sm font-medium text-muted-foreground">Unit</div>
+          <div></div>
+        </div>
+
+        {ingredients.map((ingredient, index) => (
+          <div key={ingredient.id} className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_80px_128px_40px] gap-2 w-full">
+            <Input
+              name={`name-${index}`}
+              placeholder="Ingredient name"
+              value={ingredient.name}
+              onChange={(e) => updateIngredient(ingredient.id, "name", e.target.value)}
+              className="bg-white dark:bg-gray-950 w-full"
+            />
+            <div className="grid grid-cols-[80px_128px] gap-2 sm:contents">
+              <Input
+                name={`quantity-${index}`}
+                type="number"
+                placeholder="Qty"
+                value={ingredient.quantity}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Allow numbers with up to 2 decimal places
+                  if (value === '' || /^\d+(\.\d{0,2})?$/.test(value)) {
+                    updateIngredient(ingredient.id, "quantity", value === '' ? 0 : parseFloat(value));
+                  }
+                }}
+                min="0.00"
+                step="0.10"
+                className="bg-white dark:bg-gray-950 w-full"
+              />
+              <Select
+                name={`unit-${index}`}
+                value={ingredient.unit}
+                onValueChange={(value) => updateIngredient(ingredient.id, "unit", value)}
+              >
+                <SelectTrigger className="h-10 sm:h-11 bg-white dark:bg-gray-950 w-full">
+                  <SelectValue placeholder="Unit" />
+                </SelectTrigger>
+                <SelectContent className="bg-white dark:bg-gray-950 [&_[data-state=checked]]:bg-primary [&_[data-state=checked]]:text-white [&_[data-state=checked]]:dark:bg-primary/90 [&_[data-state=checked]]:dark:text-white [&_[data-state=checked]]:hover:bg-primary/90 [&_[data-state=checked]]:dark:hover:bg-primary/80 [&_[data-state=unchecked]]:hover:bg-gray-100 [&_[data-state=unchecked]]:dark:hover:bg-gray-900">
+                  {UNITS.map((unit) => (
+                    <SelectItem key={unit} value={unit} className="text-sm sm:text-base">
+                      {unit}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {ingredients.length > 1 && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => removeIngredient(ingredient.id)}
+                className="shrink-0 cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        ))}
       </div>
     </form>
   );
