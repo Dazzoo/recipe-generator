@@ -165,7 +165,7 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
               onChange={(e) => updateIngredient(ingredient.id, "name", e.target.value)}
               className="bg-white dark:bg-gray-950 w-full"
             />
-            <div className="grid grid-cols-[80px_128px] gap-2 sm:contents">
+            <div className="grid grid-cols-[80px_128px_40px] gap-2 sm:contents">
               <Input
                 name={`quantity-${index}`}
                 type="number"
@@ -198,18 +198,18 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
                   ))}
                 </SelectContent>
               </Select>
+              {ingredients.length > 1 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeIngredient(ingredient.id)}
+                  className="shrink-0 cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
-            {ingredients.length > 1 && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => removeIngredient(ingredient.id)}
-                className="shrink-0 cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
           </div>
         ))}
       </div>
