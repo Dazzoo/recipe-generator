@@ -7,9 +7,9 @@ export interface User {
 }
 
 export interface UserPreferences {
-  dietaryRestrictions?: string[];
-  cookingSkillLevel: 'beginner' | 'intermediate' | 'advanced';
-  cookingTimePreference: 'quick' | 'moderate' | 'extensive';
+  dietaryRestrictions: string[];
+  cookingSkillLevel: "beginner" | "intermediate" | "advanced";
+  cookingTimePreference: "quick" | "moderate" | "extensive";
   servingSize: number;
 }
 
@@ -28,6 +28,30 @@ export interface Recipe {
   updatedAt: Date;
 }
 
+export interface RecipeResponse {
+  title: string;
+  description: string;
+  prepTime: number;
+  cookTime: number;
+  totalTime: number;
+  servings: number;
+  ingredients: {
+    name: string;
+    amount: number;
+    unit: string;
+  }[];
+  instructions: {
+    step: number;
+    description: string;
+  }[];
+  tips: string[];
+  nutritionalInfo: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+}
 
 export const COMMON_UNITS = [
   { value: 'g', label: 'grams' },
@@ -44,4 +68,16 @@ export const COMMON_UNITS = [
   { value: 'whole', label: 'whole' },
 ] as const;
 
-export type Unit = typeof COMMON_UNITS[number]['value'];
+export type Unit =
+  | "g"
+  | "kg"
+  | "ml"
+  | "l"
+  | "tsp"
+  | "tbsp"
+  | "cup"
+  | "oz"
+  | "lb"
+  | "piece"
+  | "pinch"
+  | "to taste";
