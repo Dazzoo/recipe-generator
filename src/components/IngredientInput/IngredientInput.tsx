@@ -20,7 +20,7 @@ interface IngredientInputProps {
 
 const ingredientSchema = z.object({
   name: z.string()
-    .min(3, "Name must be at least 3 characters")
+    .min(3, "Ingredient name must be at least 3 characters")
     .regex(/^[a-zA-Z\s]+$/, "Ingredient name can only contain letters and spaces"),
   quantity: z.number()
     .min(0.01, "Quantity must be greater than 0")
