@@ -40,13 +40,22 @@ const toastVariants = cva(
 
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
-    VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> & {
+    variant?: "default" | "destructive" | "success" | "warning" | "info"
+  }
+>(({ className, variant = "default", ...props }, ref) => {
   return (
     <ToastPrimitives.Root
       ref={ref}
-      className={cn(toastVariants({ variant }), className)}
+      className={cn(
+        "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full",
+        variant === "default" && "bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800",
+        variant === "destructive" && "bg-white dark:bg-gray-950 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400",
+        variant === "success" && "bg-white dark:bg-gray-950 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400",
+        variant === "warning" && "bg-white dark:bg-gray-950 border border-yellow-200 dark:border-yellow-800 text-yellow-600 dark:text-yellow-400",
+        variant === "info" && "bg-white dark:bg-gray-950 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400",
+        className
+      )}
       {...props}
     />
   )

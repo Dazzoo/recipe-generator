@@ -67,38 +67,39 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate ingredients in sequence
+    for (let i = 0; i < ingredients.length; i++) {
+      try {
+        ingredientSchema.parse(ingredients[i]);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const firstError = error.errors[0];
+          const fieldName = firstError.path[0];
+          
+          toast({
+            variant: "destructive",
+            title: "Validation Error",
+            description: firstError.message,
+          });
+
+          // Focus the invalid field
+          const element = document.querySelector(`[name="${fieldName}-${i}"]`) as HTMLElement;
+          if (element) {
+            element.focus();
+            // If it's a select element, we need to click it to open the dropdown
+            if (element instanceof HTMLSelectElement) {
+              element.click();
+            }
+          }
+          return; // Stop validation at first error
+        }
+      }
+    }
+
     setIsLoading(true);
 
     try {
-      // Validate ingredients in sequence
-      for (let i = 0; i < ingredients.length; i++) {
-        try {
-          ingredientSchema.parse(ingredients[i]);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            const firstError = error.errors[0];
-            const fieldName = firstError.path[0];
-            
-            toast({
-              variant: "destructive",
-              title: "Validation Error",
-              description: firstError.message,
-            });
-
-            // Focus the invalid field
-            const element = document.querySelector(`[name="${fieldName}-${i}"]`) as HTMLElement;
-            if (element) {
-              element.focus();
-              // If it's a select element, we need to click it to open the dropdown
-              if (element instanceof HTMLSelectElement) {
-                element.click();
-              }
-            }
-            return; // Stop validation at first error
-          }
-        }
-      }
-
       const response = await fetch("/api/recipes/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
