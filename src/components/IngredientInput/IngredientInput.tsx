@@ -12,58 +12,34 @@ import {
   SelectValue,
 } from "@/components/shadcn/select";
 import { X } from "lucide-react";
+import { UNITS, type Unit } from "@/lib/ingredients";
+import { generateRecipePrompt } from "@/lib/recipe-prompt";
+import type { UserPreferences } from "@/types";
 import { useToast } from "@/hooks/useToast";
 
 interface IngredientInputProps {
-  onRecipeGenerated: (recipe: any) => void;
+  onSubmit: (prompt: string) => Promise<void>;
+  isLoading: boolean;
+  preferences: UserPreferences;
 }
 
-const ingredientSchema = z.object({
-  name: z.string()
-    .min(3, "Ingredient name must be at least 3 characters")
-    .regex(/^[a-zA-Z\s]+$/, "Ingredient name can only contain letters and spaces"),
-  quantity: z.number()
-    .min(0.01, "Quantity must be greater than 0")
-    .refine((val) => {
-      // Check if the number has at most 2 decimal places
-      const str = val.toString();
-      return /^\d+(\.\d{0,2})?$/.test(str);
-    }, "Please enter a valid number with up to 2 decimal places (e.g., 1, 1.5, 2.25)"),
-  unit: z.enum(["g", "kg", "ml", "l", "tsp", "tbsp", "cup", "oz", "lb", "pinch", "piece", "whole"] as const, {
-    required_error: "Unit is required",
-  }),
-});
+export function IngredientInput({ onSubmit, isLoading, preferences }: IngredientInputProps) {
+  const [ingredients, setIngredients] = useState<Array<{ id: string; name: string; quantity: number; unit: Unit }>>([
+    { id: "1", name: "", quantity: 0, unit: "g" },
+  ]);
 
-type Ingredient = z.infer<typeof ingredientSchema> & { id: number };
-
-const UNITS = ["g", "kg", "ml", "l", "tsp", "tbsp", "cup", "oz", "lb", "pinch", "piece", "whole"] as const;
-
-export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
-  const [ingredients, setIngredients] = useState<Ingredient[]>([{ id: Date.now(), name: "", quantity: 0, unit: "g" }]);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Focus on the first ingredient's name input
-    const firstInput = document.querySelector('input[name="name-0"]') as HTMLInputElement;
-    if (firstInput) {
-      firstInput.focus();
-    }
-  }, []); // Empty dependency array means this runs once on mount
-
-  const addIngredient = () => {
-    setIngredients([...ingredients, { id: Date.now(), name: "", quantity: 0, unit: "g" }]);
-  };
-
-  const updateIngredient = (id: number, field: keyof Ingredient, value: string | number) => {
-    setIngredients(ingredients.map(ing => 
-      ing.id === id ? { ...ing, [field]: value } : ing
-    ));
-  };
-
-  const removeIngredient = (id: number) => {
-    setIngredients(ingredients.filter(ing => ing.id !== id));
-  };
+  const ingredientSchema = z.object({
+    name: z.string()
+      .min(3, "Ingredient name must be at least 3 characters")
+      .regex(/^[a-zA-Z\s]+$/, "Ingredient name can only contain letters and spaces"),
+    quantity: z.number()
+      .min(0.01, "Quantity must be greater than 0")
+      .max(1000, "Quantity must be less than 1000"),
+    unit: z.string()
+      .min(1, "Unit is required"),
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,37 +73,39 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
       }
     }
 
-    setIsLoading(true);
-
     try {
-      const response = await fetch("/api/recipes/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredients }),
-      });
-
-      if (!response.ok) throw new Error("Failed to generate recipe");
-      const data = await response.json();
-      onRecipeGenerated(data);
+      const prompt = generateRecipePrompt(ingredients, preferences);
+      await onSubmit(prompt);
     } catch (error) {
-      if (!(error instanceof z.ZodError)) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error instanceof Error ? error.message : "An error occurred",
-        });
-      }
-    } finally {
-      setIsLoading(false);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to generate recipe. Please try again.",
+      });
     }
   };
 
+  const addIngredient = () => {
+    setIngredients([
+      ...ingredients,
+      { id: Date.now().toString(), name: "", quantity: 0, unit: "g" },
+    ]);
+  };
+
+  const removeIngredient = (id: string) => {
+    setIngredients(ingredients.filter((ing) => ing.id !== id));
+  };
+
+  const updateIngredient = (id: string, field: "name" | "quantity" | "unit", value: string | number) => {
+    setIngredients(
+      ingredients.map((ing) =>
+        ing.id === id ? { ...ing, [field]: value } : ing
+      )
+    );
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 w-full" onKeyDown={(e) => {
-      if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
-        e.preventDefault();
-      }
-    }}>
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
@@ -186,7 +164,11 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
                 <Select
                   name={`unit-${index}`}
                   value={ingredient.unit}
-                  onValueChange={(value) => updateIngredient(ingredient.id, "unit", value)}
+                  onValueChange={(value: string) => {
+                    if (UNITS.includes(value as Unit)) {
+                      updateIngredient(ingredient.id, "unit", value as Unit);
+                    }
+                  }}
                 >
                   <SelectTrigger className="h-10 sm:h-11 bg-white dark:bg-gray-950 w-full">
                     <SelectValue placeholder="Unit" />

@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   name: string | null;
@@ -8,13 +7,9 @@ export interface User {
 }
 
 export interface UserPreferences {
-  id: string;
-  userId: string;
-  dietaryRestrictions: string[];
-  allergies: string[];
-  cookingSkillLevel: 'beginner' | 'intermediate' | 'expert';
-  preferredCuisines: string[];
-  cookingTimePreference: 'quick' | 'moderate' | 'elaborate';
+  dietaryRestrictions?: string[];
+  cookingSkillLevel: 'beginner' | 'intermediate' | 'advanced';
+  cookingTimePreference: 'quick' | 'moderate' | 'extensive';
   servingSize: number;
 }
 
