@@ -43,10 +43,6 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const nameInputRef = useRef<HTMLInputElement>(null);
-  const quantityInputRef = useRef<HTMLInputElement>(null);
-  const unitSelectRef = useRef<HTMLButtonElement>(null);
-
   useEffect(() => {
     // Focus on the first ingredient's name input
     const firstInput = document.querySelector('input[name="name-0"]') as HTMLInputElement;
@@ -173,12 +169,12 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
             value={ingredient.unit}
             onValueChange={(value) => updateIngredient(ingredient.id, "unit", value)}
           >
-            <SelectTrigger className="bg-white dark:bg-gray-950 w-full">
+            <SelectTrigger className="h-10 sm:h-11 bg-white dark:bg-gray-950 w-full">
               <SelectValue placeholder="Unit" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-gray-950 [&_[data-state=checked]]:bg-primary [&_[data-state=checked]]:text-white [&_[data-state=checked]]:dark:bg-primary/90 [&_[data-state=checked]]:dark:text-white [&_[data-state=checked]]:hover:bg-primary/90 [&_[data-state=checked]]:dark:hover:bg-primary/80 [&_[data-state=unchecked]]:hover:bg-gray-100 [&_[data-state=unchecked]]:dark:hover:bg-gray-900">
               {UNITS.map((unit) => (
-                <SelectItem key={unit} value={unit}>
+                <SelectItem key={unit} value={unit} className="text-sm sm:text-base">
                   {unit}
                 </SelectItem>
               ))}
