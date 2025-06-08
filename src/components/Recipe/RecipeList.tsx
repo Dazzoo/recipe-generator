@@ -11,7 +11,7 @@ interface RecipeListProps {
 export function RecipeList({ recipes, onFavoriteToggle }: RecipeListProps) {
   if (recipes.length === 0) {
     return (
-      <div className="text-center py-8 bg-red-500">
+      <div className="text-center py-8 ">
         No recipes found. Add some ingredients to get started!
       </div>
     );

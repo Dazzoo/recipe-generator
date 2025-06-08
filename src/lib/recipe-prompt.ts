@@ -51,7 +51,7 @@ export function generateRecipePrompt(ingredients: Ingredient[], preferences: Use
     })
     .join(", ");
 
-  return `Create a recipe using the following ingredients: ${ingredientsList}
+  return `Create a recipe using these ingredients: ${ingredientsList}
 
 Requirements:
 - Dietary restrictions: ${dietaryRestrictions}
@@ -90,15 +90,16 @@ Please provide the recipe in the following JSON format:
 }
 
 Make sure to:
-1. Use only the provided ingredients
-2. Adjust quantities based on serving size
-3. Consider dietary restrictions
-4. Match the cooking skill level
-5. Keep within the time preference
-6. Provide clear, step-by-step instructions
-7. Include helpful tips
-8. Calculate approximate nutritional information
-9. If an ingredient doesn't have a specified quantity or unit, suggest appropriate amounts based on the recipe`;
+1. Include the provided ingredients in the recipe
+2. Suggest complementary ingredients to create a complete dish
+3. Adjust quantities based on serving size
+4. Consider dietary restrictions
+5. Match the cooking skill level
+6. Keep within the time preference
+7. Provide clear, step-by-step instructions
+8. Include helpful tips
+9. Calculate approximate nutritional information
+10. If an ingredient doesn't have a specified quantity or unit, suggest appropriate amounts based on the recipe`;
 }
 
 export function validateRecipeResponse(response: unknown): RecipeResponse {

@@ -15,7 +15,7 @@ interface RecipeCardProps {
 
 export function RecipeCard({ recipe, onFavoriteToggle, className }: RecipeCardProps) {
   return (
-    <Card className={cn('overflow-hidden pixel-card', className)}>
+    <Card className={cn('overflow-hidden ', className)}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
         <div>
           <CardTitle className="text-2xl font-semibold pixel-title">{recipe.title}</CardTitle>
