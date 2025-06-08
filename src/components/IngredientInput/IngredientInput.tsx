@@ -198,11 +198,11 @@ export function IngredientInput({ onRecipeGenerated }: IngredientInputProps) {
           type="button" 
           variant="outline" 
           onClick={addIngredient} 
-          className="border-primary text-primary hover:bg-primary/10 hover:text-primary/90"
+          className="border-primary text-primary hover:bg-primary/10 hover:text-primary/90 cursor-pointer"
         >
           Add Ingredient
         </Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} className="cursor-pointer">
           {isLoading ? "Generating..." : "Generate Recipe"}
         </Button>
       </div>

@@ -76,7 +76,7 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
               key={restriction}
               variant={preferences.dietaryRestrictions?.includes(restriction) ? "default" : "outline"}
               onClick={() => handleRestrictionToggle(restriction)}
-              className={`justify-start h-auto py-2 px-3 text-sm relative bg-white dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-900 ${
+              className={`justify-start h-auto py-2 px-3 text-sm relative bg-white dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer ${
                 preferences.dietaryRestrictions?.includes(restriction) 
                   ? 'bg-primary text-white dark:bg-primary/90 dark:text-white hover:bg-primary/90 dark:hover:bg-primary/80' 
                   : ''
@@ -112,7 +112,7 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
             handleChange('cookingSkillLevel', value as UserPreferencesType['cookingSkillLevel'])
           }
         >
-          <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base bg-white dark:bg-gray-950 w-full">
+          <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base bg-white dark:bg-gray-950 w-full cursor-pointer">
             <SelectValue placeholder="Select skill level" />
           </SelectTrigger>
           <SelectContent className="bg-white dark:bg-gray-950 [&_[data-state=checked]]:bg-primary [&_[data-state=checked]]:text-white [&_[data-state=checked]]:dark:bg-primary/90 [&_[data-state=checked]]:dark:text-white [&_[data-state=checked]]:hover:bg-primary/90 [&_[data-state=checked]]:dark:hover:bg-primary/80 [&_[data-state=unchecked]]:hover:bg-gray-100 [&_[data-state=unchecked]]:dark:hover:bg-gray-900">
@@ -137,7 +137,7 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
             handleChange('cookingTimePreference', value as UserPreferencesType['cookingTimePreference'])
           }
         >
-          <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base bg-white dark:bg-gray-950 w-full">
+          <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base bg-white dark:bg-gray-950 w-full cursor-pointer">
             <SelectValue placeholder="Select time preference" />
           </SelectTrigger>
           <SelectContent className="bg-white dark:bg-gray-950 [&_[data-state=checked]]:bg-primary [&_[data-state=checked]]:text-white [&_[data-state=checked]]:dark:bg-primary/90 [&_[data-state=checked]]:dark:text-white [&_[data-state=checked]]:hover:bg-primary/90 [&_[data-state=checked]]:dark:hover:bg-primary/80 [&_[data-state=unchecked]]:hover:bg-gray-100 [&_[data-state=unchecked]]:dark:hover:bg-gray-900">
@@ -170,7 +170,7 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
                 handleChange('servingSize', preferences.servingSize - 1);
               }
             }}
-            className="h-10 w-10 bg-white dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-900"
+            className="h-10 w-10 bg-white dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer"
           >
             -
           </Button>
@@ -186,7 +186,7 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
                 handleChange('servingSize', preferences.servingSize + 1);
               }
             }}
-            className="h-10 w-10 bg-white dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-900"
+            className="h-10 w-10 bg-white dark:bg-gray-950 hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer"
           >
             +
           </Button>
