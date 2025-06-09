@@ -4,8 +4,6 @@ import { useState } from "react";
 import { IngredientInput } from "@/components/IngredientInput/IngredientInput";
 import { UserPreferences } from "@/components/UserPreferences";
 import { RecipeCard } from "@/components/Recipe/RecipeCard";
-import { generateRecipePrompt } from "@/lib/recipe-prompt";
-import { generateRecipe } from "@/lib/recipe-generator";
 import type { RecipeResponse, UserPreferences as UserPreferencesType } from "@/types";
 
 export default function Home() {
@@ -21,7 +19,17 @@ export default function Home() {
   const handleSubmit = async (prompt: string) => {
     setIsLoading(true);
     try {
-      const recipeData = await generateRecipe(prompt);
+      const response = await fetch("/api/recipes/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to generate recipe");
+      }
+      const recipeData = await response.json();
       setRecipe(recipeData);
     } catch (error) {
       console.error("Error generating recipe:", error);

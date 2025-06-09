@@ -1,14 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { RecipeResponse } from "./recipe-prompt";
 import { validateRecipeResponse } from "./recipe-prompt";
-import { env } from "./env/env";
 
-const genAI = new GoogleGenerativeAI(env.GOOGLE_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
 
 export async function generateRecipe(prompt: string): Promise<RecipeResponse> {
   try {
     // For text-only input, use the gemini-pro model
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     console.log("prompt", prompt);
 
@@ -16,8 +15,11 @@ export async function generateRecipe(prompt: string): Promise<RecipeResponse> {
     const response = await result.response;
     const text = response.text();
 
+    // Clean up the response text by removing markdown code block syntax
+    const cleanedText = text.replace(/```json\n?|\n?```/g, '').trim();
+
     // Parse the JSON response
-    const recipeData = JSON.parse(text);
+    const recipeData = JSON.parse(cleanedText);
     
     // Validate the response
     return validateRecipeResponse(recipeData);

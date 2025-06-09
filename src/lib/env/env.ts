@@ -8,7 +8,7 @@ dotenv.config()
 const envSchema = z.object({
   // API Keys
   GOOGLE_API_KEY: z.string().min(1, {
-    message: "NEXT_PUBLIC_GOOGLE_API_KEY is required",
+    message: "GOOGLE_API_KEY is required",
   }),
   
   // App
