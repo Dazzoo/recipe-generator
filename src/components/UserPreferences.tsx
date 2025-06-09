@@ -2,11 +2,8 @@
 
 import React, { useState } from 'react';
 import type { UserPreferences as UserPreferencesType } from '@/types';
-import { Card } from '@/components/shadcn/card';
-import { Checkbox } from '@/components/shadcn/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select';
-import { Slider } from '@/components/shadcn/slider';
-import { X, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Button } from '@/components/shadcn/button';
 import {
   Tooltip,
@@ -27,7 +24,7 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
     servingSize: 2,
   });
 
-  const handleChange = (key: keyof UserPreferencesType, value: any) => {
+  const handleChange = (key: keyof UserPreferencesType, value: string | number | string[] | undefined) => {
     const updatedPreferences = { ...preferences, [key]: value };
     setPreferences(updatedPreferences);
     onPreferencesChange(updatedPreferences);
@@ -59,11 +56,6 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
       ? current.filter((r) => r !== restriction)
       : [...current, restriction];
     handleChange('dietaryRestrictions', updated);
-  };
-
-  const removeRestriction = (restriction: string) => {
-    const current = preferences.dietaryRestrictions || [];
-    handleChange('dietaryRestrictions', current.filter((r) => r !== restriction));
   };
 
   return (
@@ -191,7 +183,6 @@ export function UserPreferences({ onPreferencesChange }: UserPreferencesProps) {
             +
           </Button>
         </div>
-
       </div>
     </div>
   );
