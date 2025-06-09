@@ -36,7 +36,7 @@ export interface RecipeResponse {
   totalTime: number;
   servings: number;
   ingredients: {
-    name: string;
+  name: string;
     amount: number;
     unit: string;
   }[];
