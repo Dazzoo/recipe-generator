@@ -1,9 +1,10 @@
+import { Footer } from '@/components/Footer'
+import { ThemeProvider } from '@/components/Theme/ThemeProvider'
+import { ThemeToggle } from '@/components/Theme/ThemeToggle'
+import { Toaster } from "@/components/shadcn/toaster"
 import '@/styles/globals.css'
 import type { Metadata } from 'next'
 import { Inter, VT323 } from 'next/font/google'
-import { ThemeToggle } from '@/components/Theme/ThemeToggle'
-import { ThemeProvider } from '@/components/Theme/ThemeProvider'
-import { Toaster } from "@/components/shadcn/toaster"
 
 const inter = Inter({ subsets: ['latin'] })
 const vt323 = VT323({ 
@@ -24,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} ${vt323.variable}`}>
+      <body className={`${inter.className} ${vt323.variable} flex flex-col min-h-screen`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -34,8 +35,11 @@ export default function RootLayout({
           <div className="fixed top-4 right-4 z-50">
             <ThemeToggle />
           </div>
-          {children}
-          <Toaster />
+          <div className="flex-1 flex flex-col">
+            {children}
+            <Toaster />
+          </div>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
