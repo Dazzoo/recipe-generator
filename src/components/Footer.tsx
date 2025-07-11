@@ -8,9 +8,14 @@ export function Footer() {
           <div className="text-center md:text-left mb-4 md:mb-0">
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               Made with ❤️ by{' '}
-              <span className="font-semibold text-primary hover:text-primary/80 transition-colors">
+              <Link 
+                href="https://yurii.shushanskyi.com/" 
+                className="font-semibold text-primary hover:text-primary/80 transition-colors underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Yurii Shuhanskyi
-              </span>
+              </Link>
               {' '}© 2025
             </p>
           </div>
