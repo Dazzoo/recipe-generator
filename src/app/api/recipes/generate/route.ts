@@ -1,7 +1,17 @@
+import { checkRateLimit } from "@/lib/rate-limiter";
 import { generateRecipe } from "@/lib/recipe-generator";
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
+  const rateLimitResult = checkRateLimit(request);
+
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { error: rateLimitResult.error },
+      { status: 429 }
+    );
+  }
+
   try {
     const { prompt } = await request.json();
     const recipeData = await generateRecipe(prompt);
