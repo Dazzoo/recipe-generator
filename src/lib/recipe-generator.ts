@@ -7,8 +7,6 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
 const MAX_RETRIES = 2;
 
 export async function generateRecipe(prompt: string): Promise<RecipeResponse> {
-  let lastError: unknown;
-  
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
       const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash-lite" });
@@ -25,8 +23,6 @@ export async function generateRecipe(prompt: string): Promise<RecipeResponse> {
       
       return validateRecipeResponse(recipeData);
     } catch (error: unknown) {
-      lastError = error;
-      
       const errorMessage = error instanceof Error ? error.message : String(error);
       const errorStatus = (error as { status?: number })?.status;
       
