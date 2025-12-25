@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { z } from "zod";
 import { Button } from "@/components/shadcn/button";
 import { type Unit } from "@/lib/ingredients";
-import { generateRecipePrompt } from "@/lib/recipe-prompt";
-import { notifyError } from "@/lib/notifications";
-import type { UserPreferences } from "@/types";
 import { ingredientSchema } from "@/lib/ingredients/schema";
+import { notifyError } from "@/lib/notifications";
+import { generateRecipePrompt } from "@/lib/recipe-prompt";
+import type { UserPreferences } from "@/types";
+import React, { useState } from "react";
+import { z } from "zod";
 import IngredientForm from "./IngredientForm";
 
 interface Ingredient {

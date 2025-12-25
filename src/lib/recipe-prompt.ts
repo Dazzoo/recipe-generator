@@ -144,9 +144,17 @@ OUTPUT FORMAT - Return ONLY valid JSON (no markdown, no code blocks, no extra te
   }
 }
 
-CRITICAL: 
-- Return ONLY the JSON object, no markdown formatting, no code block markers
-- Ensure all numbers are actual numbers (not strings)
+CRITICAL JSON FORMATTING RULES:
+- Return ONLY valid JSON, no markdown code blocks, no extra text before or after
+- Ensure all numbers are actual numbers (not strings like "5" or "10")
+- All strings must use double quotes, not single quotes
+- No trailing commas in objects or arrays
+- No comments in JSON
+- All property names must be in double quotes
+- Ensure proper escaping of special characters in strings
+- The JSON must be complete and valid - test it before returning
+
+VALIDATION:
 - All provided ingredients must be in the ingredients array
 - Quantities must be accurate for ${servingSize} servings
 - Follow time constraints strictly
