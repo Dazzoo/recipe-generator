@@ -5,8 +5,8 @@ import { z } from "zod";
 import { Button } from "@/components/shadcn/button";
 import { type Unit } from "@/lib/ingredients";
 import { generateRecipePrompt } from "@/lib/recipe-prompt";
+import { notifyError } from "@/lib/notifications";
 import type { UserPreferences } from "@/types";
-import { useToast } from "@/hooks/useToast";
 import { ingredientSchema } from "@/lib/ingredients/schema";
 import IngredientForm from "./IngredientForm";
 
@@ -27,7 +27,6 @@ export function IngredientInput({ onSubmit, isLoading, preferences }: Ingredient
   const [ingredients, setIngredients] = useState<Ingredient[]>([
     { id: "1", name: "" },
   ]);
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,11 +40,7 @@ export function IngredientInput({ onSubmit, isLoading, preferences }: Ingredient
           const firstError = error.errors[0];
           const fieldName = firstError.path[0];
           
-          toast({
-            variant: "destructive",
-            title: "Validation Error",
-            description: firstError.message,
-          });
+          notifyError("Validation Error", firstError.message);
 
           // Focus the invalid field
           const element = document.querySelector(`[name="${fieldName}-${i}"]`) as HTMLElement;
@@ -65,11 +60,7 @@ export function IngredientInput({ onSubmit, isLoading, preferences }: Ingredient
       await onSubmit(prompt);
     } catch (error) {
       console.error(error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to generate recipe. Please try again.",
-      });
+      notifyError("Error", "Failed to generate recipe. Please try again.");
     }
   };
 

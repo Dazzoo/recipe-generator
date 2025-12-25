@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { IngredientInput } from "@/components/IngredientInput/IngredientInput";
-import { UserPreferences } from "@/components/UserPreferences";
 import { RecipeCard } from "@/components/Recipe/RecipeCard";
+import { UserPreferences } from "@/components/UserPreferences";
+import { notifyError, notifySuccess } from "@/lib/notifications";
 import type { RecipeResponse, UserPreferences as UserPreferencesType } from "@/types";
+import { useState } from "react";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,13 +27,26 @@ export default function Home() {
         },
         body: JSON.stringify({ prompt }),
       });
+
       if (!response.ok) {
-        throw new Error("Failed to generate recipe");
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || "Failed to generate recipe";
+        
+        if (response.status === 429) {
+          notifyError("Rate Limit Exceeded", errorMessage);
+        } else {
+          notifyError("Error", errorMessage);
+        }
+        return;
       }
+
       const recipeData = await response.json();
       setRecipe(recipeData);
+      notifySuccess("Recipe Generated", "Your recipe has been generated successfully!");
     } catch (error) {
       console.error("Error generating recipe:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to generate recipe. Please try again.";
+      notifyError("Error", errorMessage);
     } finally {
       setIsLoading(false);
     }
