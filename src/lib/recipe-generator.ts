@@ -19,13 +19,16 @@ export async function generateRecipe(prompt: string): Promise<RecipeResponse> {
     const recipeData = JSON.parse(cleanedText);
     
     return validateRecipeResponse(recipeData);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error generating recipe:", error);
     
-    if (error?.status === 429 || error?.message?.includes("quota")) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStatus = (error as { status?: number })?.status;
+    
+    if (errorStatus === 429 || errorMessage.includes("quota")) {
       throw new Error("API quota exceeded. Please check your Google AI API key and billing plan.");
     }
     
-    throw new Error(error?.message || "Failed to generate recipe. Please try again.");
+    throw new Error(errorMessage || "Failed to generate recipe. Please try again.");
   }
 }   
