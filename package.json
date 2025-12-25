@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check-env": "node --loader ts-node/esm src/lib/env/check-env.ts"
+    "check-env": "node --loader ts-node/esm src/lib/env/check-env.ts",
+    "list-models": "node --loader ts-node/esm src/lib/list-models.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",

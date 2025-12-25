@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { generateRecipe } from "@/lib/recipe-generator";
+import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
@@ -8,6 +8,10 @@ export async function POST(request: Request) {
     return NextResponse.json(recipeData);
   } catch (error) {
     console.error("Error generating recipe:", error);
-    return NextResponse.json({ error: "Failed to generate recipe" }, { status: 500 });
+    
+    const errorMessage = error instanceof Error ? error.message : "Failed to generate recipe";
+    const status = errorMessage.includes("quota") || errorMessage.includes("rate limit") ? 429 : 500;
+    
+    return NextResponse.json({ error: errorMessage }, { status });
   }
 } 

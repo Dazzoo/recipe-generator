@@ -6,8 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
 
 export async function generateRecipe(prompt: string): Promise<RecipeResponse> {
   try {
-    // For text-only input, use the gemini-pro model
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash-lite" });
 
     console.log("prompt", prompt);
 
@@ -15,16 +14,18 @@ export async function generateRecipe(prompt: string): Promise<RecipeResponse> {
     const response = await result.response;
     const text = response.text();
 
-    // Clean up the response text by removing markdown code block syntax
     const cleanedText = text.replace(/```json\n?|\n?```/g, '').trim();
 
-    // Parse the JSON response
     const recipeData = JSON.parse(cleanedText);
     
-    // Validate the response
     return validateRecipeResponse(recipeData);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating recipe:", error);
-    throw new Error("Failed to generate recipe. Please try again.");
+    
+    if (error?.status === 429 || error?.message?.includes("quota")) {
+      throw new Error("API quota exceeded. Please check your Google AI API key and billing plan.");
+    }
+    
+    throw new Error(error?.message || "Failed to generate recipe. Please try again.");
   }
 }   
