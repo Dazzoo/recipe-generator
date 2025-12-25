@@ -2,6 +2,17 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+interface ModelInfo {
+  name: string;
+  displayName?: string;
+  description?: string;
+  supportedGenerationMethods?: string[];
+}
+
+interface ModelsResponse {
+  models?: ModelInfo[];
+}
+
 export async function listAvailableModels() {
   try {
     const apiKey = process.env.GOOGLE_API_KEY;
@@ -18,18 +29,18 @@ export async function listAvailableModels() {
       throw new Error(`Failed to list models: ${response.status} ${response.statusText}\n${errorText}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as ModelsResponse;
     
     console.log("\n=== Available Models ===");
     if (data.models && Array.isArray(data.models)) {
-      const generateContentModels = data.models.filter((model: any) => 
+      const generateContentModels = data.models.filter((model: ModelInfo) => 
         model.supportedGenerationMethods?.includes("generateContent")
       );
       
       console.log(`\nTotal models: ${data.models.length}`);
       console.log(`Models supporting generateContent: ${generateContentModels.length}\n`);
       
-      generateContentModels.forEach((model: any) => {
+      generateContentModels.forEach((model: ModelInfo) => {
         console.log(`- ${model.name}`);
         console.log(`  Display Name: ${model.displayName || "N/A"}`);
         console.log(`  Description: ${model.description || "N/A"}`);
